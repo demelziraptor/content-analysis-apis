@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
 import requests
+from time import sleep
 
-from . import Extractor, RequestError
+from . import Extractor, RequestError, NoResults
 
 
 class YahooContentAnalysisExtractor(Extractor):
 
-    def _make_request(self):
+    def _make_request(self, tries=4):
+        if not tries:
+            raise RequestError
         d = {'q': "select * from contentanalysis.analyze where text='{text}'".format(
             text=self.text.replace("'", "\\\'"),
         )}
@@ -16,12 +19,16 @@ class YahooContentAnalysisExtractor(Extractor):
             data=d,
         )
         if response.status_code != 200:
-            raise RequestError
+            sleep(1)
+            return self._make_request(tries=tries-1)
         return response
     
     @property
     def results(self):
-        r = self.response.json()['query']['results']['entities']['entity']
+        try:
+            r = self.response.json()['query']['results']['entities']['entity']
+        except (KeyError, TypeError):
+            raise NoResults
         if not isinstance(r, list):
             return [r]
         return r

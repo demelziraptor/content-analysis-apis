@@ -58,3 +58,6 @@ class RequestError(Exception):
 class MissingCredentialsError(Exception):
     pass
 
+class NoResults(Exception):
+    pass
+

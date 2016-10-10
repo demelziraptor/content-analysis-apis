@@ -1,2 +1,3 @@
 from apis.opencalais import OpenCalaisExtractor
 from apis.yahoo_content_analysis import YahooContentAnalysisExtractor
+from apis import RequestError, NoResults
