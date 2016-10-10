@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 
 class Extractor(object):
 
@@ -6,11 +8,15 @@ class Extractor(object):
     min_score = 0.8
 
     def __init__(self, text, **kwargs):
-        self.text = text.strip().decode('utf-8')
+        self.text = self._clean_text(text)
         self.response = self._make_request()
         if kwargs:
             for k, v in kwargs.iteritems():
                 setattr(self, k, v)
+
+    def _clean_text(self, text):
+        text = text.strip().encode('utf-8')
+        return re.sub(r"[^\w .,-]+", ' ', text)
 
     def _make_request(self):
         """ return Request """

@@ -24,6 +24,8 @@ class OpenCalaisExtractor(Extractor):
         return response
 
     def _calculate_score(self, score, relevance, importance):
+        if not any([score, relevance, importance]):
+            return 0
         return score or relevance or 1-(float(importance)/10)
 
     @property
@@ -43,6 +45,9 @@ class OpenCalaisExtractor(Extractor):
                 v.get('relevance'),
                 v.get('importance'),
             )
-            kws.append((v['name'], score))
+            try:
+                kws.append((v['name'], score))
+            except KeyError:
+                continue
         return kws
 
